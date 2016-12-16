@@ -10,7 +10,6 @@ from scipy import ndimage, misc
 import pandas as pd
 
 
-#from tensorflow.examples.tutorials.mnist import input_data
 
 # set log level to debug
 tf.sg_verbosity(10)
@@ -81,9 +80,10 @@ tf.sg_summary_image(gen)
 x = x.sg_reshape(shape=(-1,32,32,1))
 xx = tf.concat(0, [x, gen])
 
-with tf.sg_context(name='discriminator', size=4, stride=2, act='leaky_relu'):
+with tf.sg_context(name='discriminator', size=4, stride=2, act='leaky_relu',bn=True):
     # shared part
-    shared = (xx.sg_conv(dim=64)
+    shared = (xx.sg_conv(dim=32)
+                .sg_conv(dim=64)
                 .sg_conv(dim=128)
                 .sg_flatten()
                 .sg_dense(dim=1024))
@@ -124,4 +124,4 @@ def alt_train(sess, opt):
     return np.mean(l_disc) + np.mean(l_gen)
 
 # do training
-alt_train(log_interval=10, max_ep=500, ep_size=data.train.num_batch, early_stop=False)
+alt_train(log_interval=10, max_ep=1500, ep_size=data.train.num_batch, early_stop=False)
